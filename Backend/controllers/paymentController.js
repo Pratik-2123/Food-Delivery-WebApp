@@ -1,19 +1,41 @@
 import { instance } from "../server.js"
 import crypto from "crypto"
 import 'dotenv/config'
+import paymentModel from "../models/paymentModel.js";
+import orderModel from "../models/orderModel.js";
+import userModel from "../models/userModel.js";
+
+var newOrderId
 
 export const checkOut = async (req, res) => {
+    
     const options = {
         amount: Number(req.body.amount * 100),
         currency: "INR",
     };
-
+    
     try {
+        
         const order = await instance.orders.create(options);
 
+        try {
+            const newOrder = new orderModel({
+                userId: req.body.userId,
+                items: req.body.items,
+                amount:req.body.amount,
+                address: req.body.address
+            })
+            await newOrder.save()
+            newOrderId = newOrder._id
+            await userModel.findByIdAndUpdate(req.body.userId,{cartData:{}})
+        } catch (error) {
+            console.log(error);
+        }
+         
         res.status(200).json({
             success: true,
             order,
+        
         });
     } catch (error) {
         console.log(error)
@@ -30,19 +52,47 @@ export const paymentVerification = async (req, res) => {
         .update(body.toString())
         .digest("hex")
 
-    console.log("sig recieved", razorpay_signature)
-    console.log("sig generated", expectedSignature)
-
     const isAuthentic = expectedSignature === razorpay_signature
 
-    if(isAuthentic) {
+
+
+    if (isAuthentic) {
         // database comes here
 
+        // await paymentModel.create({
+        //     razorpay_payment_id,
+        //     razorpay_order_id,
+        //     razorpay_signature
+        // })
+        try {
+            await orderModel.findByIdAndUpdate(newOrderId,{payment: true})
+            res.redirect(`http://localhost:5173/paymentsuccess?.reference=${razorpay_payment_id}`)
+        } catch (error) {
+            console.log(error);
+        }
+        
 
-        res.redirect(`http://localhost:5173/paymentsuccess?.reference=${razorpay_payment_id}`)
+        
     } else {
-        res.status(400).json({success:false})
+        try {
+            await orderModel.findByIdAndDelete(newOrderId)
+            res.json({success:false,message:"true"})
+        } catch (error) {
+            console.log(error);
+        }
+        res.status(400).json({ success: false })
     }
 
-    
+
 };
+
+// user orders for frontend
+export const userOrders = async(req,res) =>{
+    try {
+        const orders = await orderModel.find({userId:req.body.userId})
+        res.json({success:true,data:orders})
+    } catch (error) {
+        console.log(error);
+        res.json({success:false,message:"Error"})
+    }
+}

@@ -1,10 +1,20 @@
 import { Box, Heading, Text, VStack } from '@chakra-ui/react'
 import React from 'react'
-import { useSearchParams } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { useState, useEffect } from 'react'
 
 const PaymentSuccess = () => {
+
+    const navigate = useNavigate()
+
+    const verifyPayment = async() => {
+        navigate("/myorders")
+    }
     
+    useEffect(() => {
+        verifyPayment()
+    },[])
+
     return (
         <Box>
             <VStack h="40vh" justifyContent={"center"}>
