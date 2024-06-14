@@ -6,6 +6,7 @@ import userRouter from './routes/userRoute.js'
 import 'dotenv/config'
 import cartRouter from './routes/cartRoute.js'
 import orderRouter from './routes/orderRoute.js'
+import paymentRouter from './routes/paymentRoute.js'
 import Razorpay from "razorpay"
 
 
@@ -23,6 +24,7 @@ const port = 4000
 // middleware
 app.use(express.json())
 app.use(cors())
+app.use(express.urlencoded({extended:true}))
 
 //db connection
 connectDB()
@@ -33,6 +35,7 @@ app.use("/images",express.static('uploads'))
 app.use("/api/user", userRouter)
 app.use("/api/cart",cartRouter)
 app.use("/api/order",orderRouter)
+app.use("/api/payment",paymentRouter)  // for payment Integration
 
 app.get("/", (req, res) => {
     res.send("API WORKING")
@@ -43,3 +46,9 @@ app.listen(port,()=> {
 })
 
 // mongodb+srv://pratikpatel2123:7057347707@cluster0.otcrrz1.mongodb.net
+
+
+// to get the api key for the razorpay
+app.get("/api/getkey", (req, res) =>
+    res.status(200).json({ key: process.env.RAZORPAY_API_KEY })
+  );
