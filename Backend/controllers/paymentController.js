@@ -66,7 +66,7 @@ export const paymentVerification = async (req, res) => {
         // })
         try {
             await orderModel.findByIdAndUpdate(newOrderId,{payment: true})
-            res.redirect(`http://localhost:5173/paymentsuccess?.reference=${razorpay_payment_id}`)
+            res.redirect(`http://localhost:5174/paymentsuccess?.reference=${razorpay_payment_id}`)
         } catch (error) {
             console.log(error);
         }

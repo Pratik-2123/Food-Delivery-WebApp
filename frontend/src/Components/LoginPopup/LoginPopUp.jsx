@@ -3,6 +3,7 @@ import './LoginPopUp.css'
 import { assets } from '../../assets/assets'
 import { StoreContext } from '../../context/StoreContext'
 import axios from "axios"
+import {toast} from "react-toastify"
 
 const LoginPopUp = ({ setShowLogin }) => {
 

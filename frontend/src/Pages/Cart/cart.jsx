@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import './cart.css'
 import { StoreContext } from '../../context/StoreContext'
 import { useNavigate } from 'react-router-dom'
+import BuyNowBtn from '../../Uiverse Components/Buy Now/BuyNowBtn'
 
 const cart = () => {
 
@@ -62,7 +63,8 @@ const cart = () => {
               <b>${getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() +2}</b>
             </div>
           </div>
-          <button onClick={() => navigate('/order')}>PROCEED TO CHECKOUT</button>
+          {/* <button onClick={() => navigate('/order')}>PROCEED TO CHECKOUT</button> */}
+          <BuyNowBtn price={getTotalCartAmount()+2} onClicked={() => navigate('/order')}/>
         </div>
         <div className="cart-promocode">
           <div>
